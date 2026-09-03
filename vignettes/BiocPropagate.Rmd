@@ -1,0 +1,139 @@
+---
+title: "BiocPropagate"
+output: BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Propagation Checks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The purpose of this package is to consolidate propagation decisions given
+the package build results in R Universe and Bioconductor propagation criteria.
+
+## Checking propagation
+
+`check_propagation(args)` where `args` is a named list passing
+
+| Element | Required | Description |
+|---|---|---|
+| `package` | x | Package name |
+| `universe` | x | r-universe universe name |
+| `jobs` | x | A data.frame of r-universe job data |
+| `source_path` | x | Path to the extracted source package |
+| `criteria` | | A criteria list, defaults to `default_criteria()` |
+
+The `universe` determines the Bioconductor branch internally. Bioconductor's
+published package data is always fetched live.
+
+## Design
+
+The package has a default set of propagation criteria but can allow additional
+criteria to be specified or excluded. There are two types of criteria operating
+at different levels. Unlike platform criteria, such as `platform_status` that
+independently evaluate the `R CMD check` result of the package on a platform,
+gate criteria, such as `valid_version` or `no_remotes`, check for package-level
+problems that render the propagation as `FALSE` for all platforms.
+
+```
+GATES (once, package-level)
+  vignettes, version, no_large_files, no_remotes,
+  no_secrets, no_merge_conflicts
+        |
+   any fail? -> every row's propagate = FALSE
+        |
+   all pass
+        v
+PLATFORM CRITERIA (each _jobs row, independently)
+  status, unsupported, platform_version
+        |
+   all pass -> that row's propagate = TRUE
+```
+
+The result of `check_propagation` is the `_jobs` data.frame with an extra
+`propagate` column that is `TRUE` or `FALSE`.
+
+### Details
+
+- Unsupported platforms in `Config/Bioconductor/UnsupportedPlatforms` evaluate
+to `FALSE`
+- In R Universe, vignettes are checked in the `source` job
+- The package version for a platform is evaluated by the `platform_version`
+criteria to prevent a version from being propagated again
+- OS-r_version-arch combinations not valid for a given Bioconductor branch
+evaluate to `NA`
+
+#### Default critera
+
+```{r default_critera}
+library(BiocPropagate)
+
+criteria <- default_criteria()
+names(criteria$gates)
+names(criteria$platform)
+```
+
+#### Additional critera
+
+Additional criteria may be added. Gates may also be removed.
+
+```{r bioc-checks, eval = FALSE}
+criteria <- default_criteria()
+
+# Add
+criteria <- register_criterion(
+    criteria, "always_pass",
+    function(pkg_data, branch, bioc_pkg_data, source_path)
+        list(pass = TRUE, message = NA_character_),
+        type = "gates"
+    )
+names(criteria$gates)
+
+# Remove
+criteria <- unregister_gates(criteria, "always_pass")
+names(criteria$gates)
+```
+
+Packages granted exemptions from gate-level criteria can also be defined
+in an exemptions.txt DCF file in the package manifest with the following format:
+
+```
+# manifest/exemptions.txt
+Package: package1
+Exemptions: no_large_files, no_remotes
+
+Package: package2
+Exemptions: no_remotes
+```
+
+Note: A deploy key should be provided to the organization building the universe
+if the manifest is private.
+
+## Example
+
+We'll do an example with live `_jobs` data from r-universe's public JSON API. 
+`DESCRIPTION` is reconstructed from the same payload and the result will be
+based on the default criteria and exemptions for `r Biocpkg("flowCore")`,
+which is exempt from `no_large_files`.
+
+```{r example}
+library(BiocPropagate)
+
+pkg <- jsonlite::fromJSON("https://bioc-release.r-universe.dev/flowCore/json")
+
+dir <- tempfile()
+dir.create(dir)
+writeLines(
+    c(paste("Package:", pkg[["Package"]]), paste("Version:", pkg[["Version"]])),
+    file.path(dir, "DESCRIPTION")
+)
+
+args <- list(
+    package = pkg[["Package"]],
+    universe = "bioc-release",
+    jobs = pkg[["_jobs"]],
+    source_path = dir
+)
+
+propagation <- check_propagation(args)
+print(propagation)
+```
