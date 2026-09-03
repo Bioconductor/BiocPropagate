@@ -28,8 +28,8 @@ result in `NA`.
 The propagation function is `check_propagation(args)`. `args` expects a named
 list with the following information:
 
-# Note: This example uses data from the API but `check_propagation()` will be
-# run in bioc-checks
+Note: This example uses data from the API but `check_propagation()` will be
+run in bioc-checks
 
 ```
 library(BiocPropagate)
@@ -86,7 +86,8 @@ print(propagation)
 ```
 
 Additional functionality exists to exempt a package from gates, such as the
-restriction for large files. It requires an `exemptions.txt` in the package manifest (from Bioconductor).
+restriction for large files. It requires an `exemptions.txt` in the package
+manifest (from Bioconductor).
 
 ```
 # manifest/exemptions.txt
