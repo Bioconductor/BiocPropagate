@@ -1,4 +1,3 @@
-BiocPropagate
 # BiocPropagate
 
 This package evaluates the Bioconductor R Universe build by Bioconductor
