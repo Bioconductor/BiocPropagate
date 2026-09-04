@@ -34,7 +34,7 @@ run in bioc-checks
 ```
 library(BiocPropagate)
 
-pkg <- jsonlite::fromJSON("https://bioc-release.r-universe.dev/mypackage/json")
+pkg <- jsonlite::fromJSON("https://bioc-release.r-universe.dev/rtracklayer/json")
 
 dir <- tempfile()
 dir.create(dir)
