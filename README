@@ -17,7 +17,7 @@ names(dc()$gates)
 [1] "vignettes"                  "package_version"           
 [3] "no_large_files"             "no_gitlfs"                 
 [5] "no_additional_repositories" "no_remotes"                
-[7] "no_secrets"                 "no_merge_conflicts"
+[7] "no_secrets"
 > names(dc$platform)
 [1] "status"           "unsupported"      "platform_version"
 ```

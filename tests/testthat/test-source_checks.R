@@ -78,21 +78,6 @@ test_that(".check_no_remotes fails and lists all entries for multiple Remotes", 
     expect_match(result$message, "pkg2")
 })
 
-test_that(".check_no_merge_conflicts passes for clean files", {
-    dir <- .make_source_dir(list("a.R" = "x <- 1"))
-    result <- .check_no_merge_conflicts(list(), NULL, NULL, dir)
-    expect_true(result$pass)
-})
-
-test_that(".check_no_merge_conflicts fails when conflict markers are present", {
-    dir <- .make_source_dir(list(
-        "a.R" = c("x <- 1", "<<<<<<< HEAD", "y <- 2", "=======", "y <- 3", ">>>>>>> branch")
-    ))
-    result <- .check_no_merge_conflicts(list(), NULL, NULL, dir)
-    expect_false(result$pass)
-    expect_match(result$message, "a.R")
-})
-
 test_that(".check_no_secrets passes for clean files", {
     dir <- .make_source_dir(list("a.R" = "x <- 1"))
     result <- .check_no_secrets(list(), NULL, NULL, dir)
@@ -117,6 +102,6 @@ test_that("source_criteria returns the expected gate names", {
     expect_setequal(
         names(source_criteria()$gates),
         c("no_large_files", "no_additional_repositories", "no_gitlfs",
-          "no_remotes", "no_secrets", "no_merge_conflicts")
+          "no_remotes", "no_secrets")
     )
 })

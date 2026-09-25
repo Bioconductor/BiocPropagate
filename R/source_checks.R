@@ -126,37 +126,6 @@
     ))
 }
 
-#' @noRd
-#' @title Gate: no unresolved merge-conflict markers in the source
-#'   package's files
-#'
-#' @param pkg_data,branch,bioc_pkg_data Unused; present for gate-signature
-#'   consistency.
-#' @param source_path `character(1)` Path to the extracted source
-#'   package.
-#'
-#' @return `list(pass = logical(1), message = character(1))`; `message`
-#'   is `NA_character_` on pass.
-.check_no_merge_conflicts <- function(pkg_data, branch, bioc_pkg_data, source_path) {
-    files <- list.files(source_path, recursive = TRUE, full.names = TRUE)
-    pattern <- "^(<{7}|={7}|>{7})( |$)"
-
-    hits <- character(0)
-    for (f in files) {
-        lines <- tryCatch(readLines(f, warn = FALSE), error = function(e) character())
-        if (any(grepl(pattern, lines)))
-            hits <- c(hits, f)
-    }
-
-    if (!length(hits))
-        return(list(pass = TRUE, message = NA_character_))
-
-    list(pass = FALSE, message = glue::glue(
-        "{length(hits)} file(s) contain unresolved merge-conflict markers: ",
-        "{paste(utils::head(hits, 5L), collapse = ', ')}"
-    ))
-}
-
 #' Non-exhaustive, heuristic patterns for commonly-leaked secret formats
 #' @noRd
 .SECRET_PATTERNS <- c(
@@ -228,8 +197,7 @@ source_criteria <- function() {
             no_gitlfs          		= .check_no_gitlfs,
             no_additional_repositories  = .check_no_additional_repositories,
             no_remotes         		= .check_no_remotes,
-            no_secrets         		= .check_no_secrets,
-            no_merge_conflicts 		= .check_no_merge_conflicts
+            no_secrets         		= .check_no_secrets
         )
     )
 }

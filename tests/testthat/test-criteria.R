@@ -362,7 +362,7 @@ test_that("default_criteria returns the expected gate and row names", {
     expect_setequal(names(criteria$gates), c(
         "vignettes", "package_version",
         "no_large_files", "no_additional_repositories", "no_gitlfs",
-        "no_remotes", "no_secrets", "no_merge_conflicts"
+        "no_remotes", "no_secrets"
     ))
     expect_setequal(names(criteria$platform), c("status", "unsupported", "platform_version"))
 })
@@ -425,7 +425,7 @@ manifest <- "http://github.com/jwokaty/manifest"
 
 test_that("remove_criteria removes criteria if package is exempt", {
     criteria <- default_criteria()
-    criteria$gates[c("no_large_files", "no_secrets", "no_merge_conflicts")] <- NULL
+    criteria$gates[c("no_large_files", "no_secrets", "no_additional_repositories")] <- NULL
     expect_equal(criteria,
                  remove_criteria("package1", "devel", default_criteria(),
                                  manifest))
