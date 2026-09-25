@@ -13,6 +13,7 @@ check_propagation(args)
 \item \code{universe} -- \code{character(1)} r-universe universe name
 \item \code{jobs} -- a data.frame with \code{config}, \code{r}, \code{check} columns
 \item \code{source_path} -- \code{character(1)} path to the extracted source
+\item \code{gitlfs} -- \code{character(1)} true
 \item \code{criteria} -- optional; a criteria list from \code{\link[=default_criteria]{default_criteria()}}
 }}
 }

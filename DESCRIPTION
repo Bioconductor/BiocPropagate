@@ -1,6 +1,6 @@
 Package: BiocPropagate
 Title: Validate Bioconductor Package Versions and Build Status via R-Universe
-Version: 0.99.4
+Version: 0.99.5
 Authors@R: person(
     "Marcel", "Ramos", , "marcel.ramos@sph.cuny.edu", role = c("aut", "cre")
     )
@@ -27,7 +27,6 @@ Suggests:
     testthat
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 8.0.0
 VignetteBuilder: knitr
 Collate: 
     'api.R'
@@ -40,3 +39,4 @@ Collate:
     'utilities.R'
     'valid_version.R'
     'version.R'
+Config/roxygen2/version: 8.1.0

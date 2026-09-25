@@ -4,12 +4,12 @@
 \alias{remove_criteria}
 \title{Remove gate criteria the package is exempt from}
 \usage{
-remove_criteria(package, branch, criteria, manifest = .BIOCONDUCTOR_MANIFEST)
+remove_criteria(package, universe, criteria, manifest = .BIOCONDUCTOR_MANIFEST)
 }
 \arguments{
 \item{package}{name}
 
-\item{branch}{Bioconductor git branch}
+\item{universe}{name}
 
 \item{criteria}{list()}
 
@@ -29,7 +29,7 @@ list of gate names, such as in \code{source_criteria()}.
 }
 \examples{
 \dontrun{
-remove_criteria("BiocCheck","devel", default_criteria())
+remove_criteria("BiocCheck","bioc", default_criteria())
 }
 
 }
