@@ -20,6 +20,7 @@ the package build results in R Universe and Bioconductor propagation criteria.
 | `universe` | x | r-universe universe name |
 | `jobs` | x | A data.frame of r-universe job data |
 | `source_path` | x | Path to the extracted source package |
+| `gitlfs` | | true if package uses GIT LFS
 | `criteria` | | A criteria list, defaults to `default_criteria()` |
 
 The `universe` determines the Bioconductor branch internally. Bioconductor's
@@ -131,6 +132,7 @@ args <- list(
     package = pkg[["Package"]],
     universe = "bioc-release",
     jobs = pkg[["_jobs"]],
+    gitlfs = ifelse(`_gitlfs` %in% names(pkgs), pkg[["_gitlfs"]], FALSE),
     source_path = dir
 )
 
