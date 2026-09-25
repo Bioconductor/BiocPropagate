@@ -34,6 +34,67 @@
 }
 
 #' @noRd
+#' @title Gate: DESCRIPTION does not declare a `Additional_repositories:` field
+#'
+#' @param pkg_data DESCRIPTION-equivalent metadata; source of `Additional_repositories`.
+#' @param branch,bioc_pkg_data,source_path Unused; present for
+#'   gate-signature consistency (see criteria.R).
+#'
+#' @return `list(pass = logical(1), message = character(1))`; `message`
+#'   is `NA_character_` on pass.
+#'
+#' @examples
+#' .check_no_additional_repositories(list(Additional_repositories = NULL), "devel", NULL, NULL)
+#' .check_no_additional_repositories(list(Additional_repositories= "github::user/pkg"), "devel", NULL, NULL)
+#' .check_no_Additional_repositories(
+#'     list(Additional_repositories = c("github::user/pkg1", "gitlab::user/pkg2")),
+#'     "devel", NULL, NULL
+#' )
+.check_no_additional_repositories <- function(pkg_data, branch, bioc_pkg_data, source_path) {
+    additional_repositories <- tryCatch(pkg_data[["Additional_repositories"]],
+                                        error = function(e) NULL)
+
+    if (is.null(additional_repositories) || !length(additional_repositories))
+        return(list(pass = TRUE, message = NA_character_))
+
+    additional_repositories <- additional_repositories[!is.na(additional_repositories) & nzchar(additional_repositories)]
+    if (!length(additional_repositories))
+        return(list(pass = TRUE, message = NA_character_))
+
+    list(pass = FALSE, message = glue::glue(
+        "DESCRIPTION declares Additional_repositories: {paste(additional_repositories, collapse = ', ')}"
+    ))
+}
+
+#' @noRd
+#' @title Gate: Package does not use `Git LFS`
+#'
+#' @param pkg_data DESCRIPTION-equivalent metadata, including `gitlfs`.
+#' @param branch,bioc_pkg_data,source_path Unused; present for
+#'   gate-signature consistency (see criteria.R).
+#'
+#' @return `list(pass = logical(1), message = character(1))`; `message`
+#'   is `NA_character_` on pass.
+#'
+#' @examples
+#' .check_no_gitlfs(list(`_gitlfs` = TRUE), "devel", NULL, NULL)
+#' .check_no_gitlfs(list(`_gitlfs`= NA_character_), "devel", NULL, NULL)
+.check_no_gitlfs <- function(pkg_data, branch, bioc_pkg_data, source_path) {
+    gitlfs <- tryCatch(pkg_data[["_gitlfs"]], error = function(e) NULL)
+
+    if (is.null(gitlfs) || !length(gitlfs))
+        return(list(pass = TRUE, message = NA_character_))
+
+    gitlfs <- gitlfs[!is.na(gitlfs) & nzchar(gitlfs)]
+    if (!length(gitlfs))
+        return(list(pass = TRUE, message = NA_character_))
+
+    list(pass = FALSE, message = glue::glue(
+        "Package uses gitlfs: {paste(gitlfs, collapse = ', ')}"
+    ))
+}
+
+#' @noRd
 #' @title Gate: DESCRIPTION does not declare a `Remotes:` field
 #'
 #' @param pkg_data DESCRIPTION-equivalent metadata; source of `Remotes`.
@@ -163,10 +224,12 @@
 source_criteria <- function() {
     list(
         gates = list(
-            no_large_files     = .check_no_large_files,
-            no_remotes         = .check_no_remotes,
-            no_secrets         = .check_no_secrets,
-            no_merge_conflicts = .check_no_merge_conflicts
+            no_large_files     		= .check_no_large_files,
+            no_gitlfs          		= .check_no_gitlfs,
+            no_additional_repositories  = .check_no_additional_repositories,
+            no_remotes         		= .check_no_remotes,
+            no_secrets         		= .check_no_secrets,
+            no_merge_conflicts 		= .check_no_merge_conflicts
         )
     )
 }

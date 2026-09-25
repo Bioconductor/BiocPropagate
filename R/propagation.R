@@ -84,6 +84,7 @@
 #'   * `universe` -- `character(1)` r-universe universe name		
 #'   * `jobs` -- a data.frame with `config`, `r`, `check` columns
 #'   * `source_path` -- `character(1)` path to the extracted source
+#'   * `gitlfs` -- `character(1)` true
 #'   * `criteria` -- optional; a criteria list from [default_criteria()]
 #'
 #' @return `args$jobs`, with an added `propagate` column (`logical`) --
@@ -95,6 +96,7 @@ check_propagation <- function(args) {
     universe <- args[["universe"]]
     jobs <- args[["jobs"]]
     source_path <- args[["source_path"]]
+    gitlfs <- ifelse("gitlfs" %in% names(args), as.logical(args[["gitlfs"]]), FALSE)
     criteria <- args[["criteria"]]
     if (is.null(criteria))
         criteria <- default_criteria()
@@ -103,7 +105,7 @@ check_propagation <- function(args) {
     pkg_data <- as.list(read.dcf(file.path(source_path, "DESCRIPTION"))[1, ])
     pkg_data[["_jobs"]] <- jobs
     bioc_pkg_data <- .get_all_bioc_pkg_data(branch, package)
-
+    pkg_data[["_gitlfs"]] <- gitlfs
     gate_pass <- .evaluate_gates(
         criteria[["gates"]], pkg_data, branch, bioc_pkg_data, source_path
     )

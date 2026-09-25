@@ -361,7 +361,8 @@ test_that("default_criteria returns the expected gate and row names", {
     expect_named(criteria, c("gates", "platform"))
     expect_setequal(names(criteria$gates), c(
         "vignettes", "package_version",
-        "no_large_files", "no_remotes", "no_secrets", "no_merge_conflicts"
+        "no_large_files", "no_additional_repositories", "no_gitlfs",
+        "no_remotes", "no_secrets", "no_merge_conflicts"
     ))
     expect_setequal(names(criteria$platform), c("status", "unsupported", "platform_version"))
 })

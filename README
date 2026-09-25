@@ -13,8 +13,11 @@ checked. By default, it checks the following the propagation criteria
 > library(BiocPropagate)
 > dc <- default_criteria()
 > names(dc$gates)
-[1] "vignettes"          "package_version"    "no_large_files"    
-[4] "no_remotes"         "no_secrets"         "no_merge_conflicts"
+names(dc()$gates)
+[1] "vignettes"                  "package_version"           
+[3] "no_large_files"             "no_gitlfs"                 
+[5] "no_additional_repositories" "no_remotes"                
+[7] "no_secrets"                 "no_merge_conflicts"
 > names(dc$platform)
 [1] "status"           "unsupported"      "platform_version"
 ```
@@ -47,8 +50,9 @@ writeLines(
 args <- list(
     package = pkg[["Package"]],	# package name
     universe = "bioc-release",	# r universe name
-    jobs = jobs,				# from r-universe
-    source_path = dir			# path to source so that we can check the DESCRIPTION file
+    jobs = jobs,		# from r-universe
+    source_path = dir,		# path to source to check the DESCRIPTION file
+    gitlfs = TRUE
 )
 
 propagation <- check_propagation(args)

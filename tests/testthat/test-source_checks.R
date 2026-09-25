@@ -27,6 +27,37 @@ test_that(".check_no_large_files passes for an empty directory", {
     expect_true(result$pass)
 })
 
+test_that(".check_no_additional_repositories passes when Additional_repositories is absent", {
+    result <- .check_no_additional_repositories(list(Additional_repositories = NULL), "devel", NULL, NULL)
+    expect_true(result$pass)
+})
+
+test_that(".check_no_additional_repositories fails when Additional_repositories is declared", {
+    result <- .check_no_additional_repositories(list(Additional_repositories = "github::user/pkg"), "devel", NULL, NULL)
+    expect_false(result$pass)
+    expect_match(result$message, "github::user/pkg")
+})
+
+test_that(".check_no_additional_repositories fails and lists all entries for multiple Additional_repositories", {
+    result <- .check_no_additional_repositories(
+        list(Additional_repositories = c("github::user/pkg1", "gitlab::user/pkg2")), "devel", NULL, NULL
+    )
+    expect_false(result$pass)
+    expect_match(result$message, "pkg1")
+    expect_match(result$message, "pkg2")
+})
+
+test_that(".check_no_gitlfs passes when gitlfs is absent", {
+    result <- .check_no_gitlfs(list(`_gitlfs` = NULL), "devel", NULL, NULL)
+    expect_true(result$pass)
+})
+
+test_that(".check_no_gitlfs fails when gitlfs is declared", {
+    result <- .check_no_gitlfs(list(`_gitlfs`= TRUE), "devel", NULL, NULL)
+    expect_false(result$pass)
+    expect_match(result$message, "TRUE")
+})
+
 test_that(".check_no_remotes passes when Remotes is absent", {
     result <- .check_no_remotes(list(Remotes = NULL), "devel", NULL, NULL)
     expect_true(result$pass)
@@ -85,6 +116,7 @@ test_that(".check_no_secrets fails for a private key header", {
 test_that("source_criteria returns the expected gate names", {
     expect_setequal(
         names(source_criteria()$gates),
-        c("no_large_files", "no_remotes", "no_secrets", "no_merge_conflicts")
+        c("no_large_files", "no_additional_repositories", "no_gitlfs",
+          "no_remotes", "no_secrets", "no_merge_conflicts")
     )
 })
