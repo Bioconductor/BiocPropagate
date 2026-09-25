@@ -8,9 +8,9 @@ test_that(".get_exemptions returns character(0) if no exemptions", {
 })
 
 test_that(".get_exemptions clones the branch and returns exemptions", {
-    expect_equal(c("no_merge_conflicts"),
+    expect_equal(c("no_gitlfs"),
                  .get_exemptions("package2", "devel", manifest = MANIFEST))
-    expect_equal(c("no_large_files", "no_secrets", "no_merge_conflicts"),
+    expect_equal(c("no_large_files", "no_secrets", "no_additional_repositories"),
                  .get_exemptions("package1", "devel", manifest = MANIFEST))
     expect_equal(c("no_large_files", "no_secrets"),
                  .get_exemptions("package1", "RELEASE_3_23", manifest = MANIFEST))
