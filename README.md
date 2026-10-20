@@ -13,7 +13,7 @@ checked. By default, it checks the following the propagation criteria
 > dc <- default_criteria()
 > names(dc$gates)
 [1] "vignettes"          "package_version"    "no_large_files"    
-[4] "no_remotes"         "no_secrets"         "no_merge_conflicts"
+[4] "no_remotes"         "no_secrets"
 > names(dc$platform)
 [1] "status"           "unsupported"      "platform_version"
 ```
@@ -87,14 +87,14 @@ print(propagation)
 
 Additional functionality exists to exempt a package from gates, such as the
 restriction for large files. It requires an `exemptions.txt` in the package
-manifest (from Bioconductor).
+manifest (from Bioconductor). So it clones the manifest to check for
+exemptions when check_propagation runs.
 
 ```
 # manifest/exemptions.txt
 Package: package1
-Exemptions: no_large_files, no_merge_conflicts
+Exemptions: no_large_files
 
 Package: package2
-Exemptions: no_merge_conflicts
-So it clones the manifest to check for exemptions when check_propagation runs.
+Exemptions: no_large_files
 ```
